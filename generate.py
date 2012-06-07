@@ -33,12 +33,6 @@ def generate_humidity(period):
 f = open('humidity.data', 'w')
 f.write('# seconds humidity max min low high\n')
 
-
-def shift_array(array, length):
-	"""Shift out the first element, move everthing up one spot"""
-	for x in xrange(length - 1):
-		array[x + 1] = array[x]
-
 def avg_min_max(array, length):
 	avg = sum([x[0] for x in array[:length]]) / length
 	_min = min([x[1] for x in array[:length]])
