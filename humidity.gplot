@@ -1,0 +1,12 @@
+set xdata time
+set timefmt "%s"
+set format x "%a %H:%M"
+#set yrange [50:250]
+
+plot "humidity.data" using 1:2 with lines title "humidity", \
+	"humidity.data" using 1:5 with lines title "threshold low", \
+	"humidity.data" using 1:6 with lines title "threshold high", \
+	"humidity.data" using 1:3 with lines title "day max", \
+	"humidity.data" using 1:4 with lines title "min day"
+
+pause -1
