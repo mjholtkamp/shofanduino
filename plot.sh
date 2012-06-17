@@ -1,2 +1,2 @@
-python generate.py
+python generate_simple.py
 gnuplot humidity.gplot
