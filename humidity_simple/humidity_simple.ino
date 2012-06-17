@@ -43,6 +43,7 @@ void loop() {
     // decay the old value, combine with the new (reverse decay)
     avg = avg * (1.0 - avg_decay) + humidity * avg_decay;
   }
+  // don't use math inside max(), it causes undefined behaviour (see docs)
   int cur_deviation = humidity - avg;
   int max_deviation = max(deviation, cur_deviation);
   deviation = deviation * (1.0 - deviation_decay) + max_deviation * deviation_decay;
