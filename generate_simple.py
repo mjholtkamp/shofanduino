@@ -3,11 +3,10 @@ import time
 import random
 import math
 
-fivesec = 5
-fivemin = 300
+minute = 60
 hour = 3600
 day = hour * 24
-showertime = 2 * day / 3
+showertime = 13 * hour
 week = 7 * day
 month = 30 * day
 year = 365 * day
@@ -19,15 +18,21 @@ def generate_humidity(period):
 	showerfree_stop = showerfree_start + period / 4
 
 	shower_humidity = 0
-	for seconds in xrange(start, start + period, fivesec):
-		base_humidity = random.normalvariate(165, 1)
+	initial_base_humidity = 50
+
+	step = 5
+	for seconds in xrange(start, start + period, step):
+		base_humidity = random.normalvariate(165, 1) + initial_base_humidity
+
+		# the sensor has some startup deviation, it will settle after a while
+		initial_base_humidity *= 0.98
 		period_humidity = math.sin((float(seconds) / year) * 2 * math.pi) * 10.0
-		if (seconds - (seconds % fivemin)) % day == showertime:
-			if seconds - start < showerfree_start or seconds - start > showerfree_stop:
+		if (seconds - (seconds % step)) % day == showertime:
+	#		if seconds - start < showerfree_start or seconds - start > showerfree_stop:
 				shower_humidity = 50
 
-		if seconds == start + period / 2:
-			base_humidity += 100
+#		if seconds == start + period / 2:
+#			base_humidity += 100
 
 		shower_humidity *= 0.995
 		humidity = base_humidity + shower_humidity + period_humidity
@@ -38,18 +43,23 @@ f = open('humidity.data', 'w')
 f.write('# seconds humidity max min low high\n')
 
 ############################################
-max_humidity = 0
-min_humidity = 1023
 avg_decay = 0.00001
+deviation_decay = 0.01
 avg = -1
 deviation = 20
-deviation_decay = 0.01
+startup_seconds = 15 * minute
 
-for (seconds, humidity) in generate_humidity(5 * hour):
-	if avg == -1:
-		avg = humidity
+# initialise humidity, first sample
+for (seconds, humidity) in generate_humidity(5):
+	avg = humidity
 
-	avg = avg * (1 - avg_decay) + humidity * avg_decay
+for (seconds, humidity) in generate_humidity(4 * hour):
+	if startup_seconds > 0:
+		avg = (avg + humidity) / 2
+		startup_seconds -= 5
+	else:
+		avg = avg * (1 - avg_decay) + humidity * avg_decay
+
 	cur_deviation = max(deviation, humidity - avg)
 	deviation = deviation * (1 - deviation_decay) + cur_deviation * deviation_decay
 	t_lo = avg + deviation / 3
