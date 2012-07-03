@@ -13,7 +13,7 @@ const int sensorPin = A0;    // select the input pin for the potentiometer
 const int MINHUMIDITY = 0;
 const int MAXHUMIDITY = 1023;
 const int milliseconds_sleep = 5000;
-const float avg_decay = 0.00001;
+const float avg_decay = 0.0001;
 const float deviation_decay = 0.01;
 
 int thresholdLow = 0;
