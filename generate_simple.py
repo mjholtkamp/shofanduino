@@ -26,7 +26,7 @@ def generate_humidity(period):
 
 		# the sensor has some startup deviation, it will settle after a while
 		initial_base_humidity *= 0.98
-		period_humidity = math.sin((float(seconds) / year) * 2 * math.pi) * 10.0
+		period_humidity = math.sin((float(seconds) / week) * 2 * math.pi) * 10.0
 		if (seconds - (seconds % step)) % day == showertime:
 	#		if seconds - start < showerfree_start or seconds - start > showerfree_stop:
 				shower_humidity = 50
@@ -37,13 +37,14 @@ def generate_humidity(period):
 		shower_humidity *= 0.995
 		humidity = base_humidity + shower_humidity + period_humidity
 
-		yield (seconds, humidity)
+		if seconds % 300:
+			yield (seconds, humidity)
 
 f = open('humidity.data', 'w')
-f.write('# seconds humidity max min low high\n')
+f.write('# seconds humidity deviation avg low high\n')
 
 ############################################
-avg_decay = 0.00001
+avg_decay = 0.0001
 deviation_decay = 0.01
 avg = -1
 deviation = 20
