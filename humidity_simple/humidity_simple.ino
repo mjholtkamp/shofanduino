@@ -14,8 +14,8 @@ const int sensorPin = A0;    // select the input pin for the potentiometer
 const int MINHUMIDITY = 0;
 const int MAXHUMIDITY = 1023;
 const int milliseconds_sleep = 5000;
-const float avg_decay = 0.00002;
-const float deviation_decay = 0.01;
+const float avg_ratio = 0.00002; // ratio of new value to old value (1.0 = new value)
+const float deviation_ratio = 0.000001;
 
 int thresholdLow = 0;
 int thresholdHigh = 0;
@@ -63,13 +63,13 @@ void loop() {
     avg = (avg + humidity) / 2.0f;
     startup_seconds -= milliseconds_sleep / 1000;
   } else {
-    // decay the old value, combine with the new (reverse decay)
-    avg = avg * (1.0f - avg_decay) + humidity * avg_decay;
+    // ratio the old value, combine with the new (reverse ratio)
+    avg = avg * (1.0f - avg_ratio) + humidity * avg_ratio;
   }
   // don't use math inside max(), it causes undefined behaviour (see docs)
   int cur_deviation = humidity - avg;
-  int max_deviation = max(deviation, cur_deviation);
-  deviation = deviation * (1.0f - deviation_decay) + max_deviation * deviation_decay;
+  deviation = deviation * (1.0f - deviation_ratio) + cur_deviation * deviation_ratio;
+  deviation = max(deviation, cur_deviation);
   thresholdLow = avg + deviation / 3.0f;
   thresholdHigh = avg + 2.0f * deviation / 3.0f;
   
