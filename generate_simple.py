@@ -43,7 +43,7 @@ f = open('humidity.data', 'w')
 f.write('# seconds humidity deviation avg low high\n')
 
 ############################################
-avg_ratio = 0.0002
+avg_ratio = 0.00002
 deviation_ratio = 0.000001
 avg = -1
 deviation = 20
