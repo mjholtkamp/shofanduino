@@ -37,14 +37,13 @@ def generate_humidity(period):
 		shower_humidity *= 0.995
 		humidity = base_humidity + shower_humidity + period_humidity
 
-		if seconds % 300:
-			yield (seconds, humidity)
+		yield (seconds, humidity)
 
 f = open('humidity.data', 'w')
 f.write('# seconds humidity deviation avg low high\n')
 
 ############################################
-avg_decay = 0.0001
+avg_decay = 0.0002
 deviation_decay = 0.01
 avg = -1
 deviation = 20
@@ -54,7 +53,7 @@ startup_seconds = 15 * minute
 for (seconds, humidity) in generate_humidity(5):
 	avg = humidity
 
-for (seconds, humidity) in generate_humidity(4 * hour):
+for (seconds, humidity) in generate_humidity(7 * week):
 	if startup_seconds > 0:
 		avg = (avg + humidity) / 2
 		startup_seconds -= 5
