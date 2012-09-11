@@ -6,10 +6,11 @@ import math
 minute = 60
 hour = 3600
 day = hour * 24
-showertime = 13 * hour
+showertime = 14 * hour
 week = 7 * day
 month = 30 * day
 year = 365 * day
+resolution = 5
 
 def generate_humidity(period):
 	start = int(time.time())
@@ -20,15 +21,14 @@ def generate_humidity(period):
 	shower_humidity = 0
 	initial_base_humidity = 50
 
-	step = 5
-	for seconds in xrange(start, start + period, step):
+	for seconds in xrange(start, start + period, resolution):
 		base_humidity = random.normalvariate(165, 1) + initial_base_humidity
 
 		# the sensor has some startup deviation, it will settle after a while
 		initial_base_humidity *= 0.98
-		period_humidity = math.sin((float(seconds) / week) * 2 * math.pi) * 10.0
-		if (seconds - (seconds % step)) % day == showertime:
-	#		if seconds - start < showerfree_start or seconds - start > showerfree_stop:
+		period_humidity = math.sin((float(seconds) / year) * 2 * math.pi) * 10.0
+		if (seconds - (seconds % resolution)) % day == showertime:
+			if seconds - start < showerfree_start or seconds - start > showerfree_stop:
 				shower_humidity = 50
 
 #		if seconds == start + period / 2:
@@ -43,14 +43,15 @@ f = open('humidity.data', 'w')
 f.write('# seconds humidity deviation avg low high\n')
 
 ############################################
-avg_decay = 0.0002
-deviation_decay = 0.01
+avg_ratio = 0.0002
+deviation_ratio = 0.000001
 avg = -1
 deviation = 20
 startup_seconds = 15 * minute
 
+
 # initialise humidity, first sample
-for (seconds, humidity) in generate_humidity(5):
+for (seconds, humidity) in generate_humidity(resolution):
 	avg = humidity
 
 for (seconds, humidity) in generate_humidity(7 * week):
@@ -58,10 +59,10 @@ for (seconds, humidity) in generate_humidity(7 * week):
 		avg = (avg + humidity) / 2
 		startup_seconds -= 5
 	else:
-		avg = avg * (1 - avg_decay) + humidity * avg_decay
+		avg = avg * (1 - avg_ratio) + humidity * avg_ratio
 
-	cur_deviation = max(deviation, humidity - avg)
-	deviation = deviation * (1 - deviation_decay) + cur_deviation * deviation_decay
+	deviation = deviation * (1 - deviation_ratio) + (humidity - avg) * deviation_ratio
+	deviation = max(deviation, humidity - avg)
 	t_lo = avg + deviation / 3
 	t_hi = avg + 2 * deviation / 3
 	f.write('%u %g %g %g %g %g\n' % (seconds, humidity, avg + deviation, avg, t_lo, t_hi))
