@@ -49,12 +49,17 @@ avg = -1
 deviation = 20
 startup_seconds = 15 * minute
 
+total_duration = 7 * week
+data_points = total_duration / resolution # this many data points
+wanted_data_points = 2000
+print_resolution = resolution * (data_points / wanted_data_points)
 
 # initialise humidity, first sample
 for (seconds, humidity) in generate_humidity(resolution):
 	avg = humidity
 
-for (seconds, humidity) in generate_humidity(7 * week):
+print_seconds = print_resolution # print the first one immediately
+for (seconds, humidity) in generate_humidity(total_duration):
 	if startup_seconds > 0:
 		avg = (avg + humidity) / 2
 		startup_seconds -= 5
@@ -65,4 +70,7 @@ for (seconds, humidity) in generate_humidity(7 * week):
 	deviation = max(deviation, humidity - avg)
 	t_lo = avg + deviation / 3
 	t_hi = avg + 2 * deviation / 3
-	f.write('%u %g %g %g %g %g\n' % (seconds, humidity, avg + deviation, avg, t_lo, t_hi))
+	print_seconds += resolution
+	if print_seconds > print_resolution:
+		f.write('%u %g %g %g %g %g\n' % (seconds, humidity, avg + deviation, avg, t_lo, t_hi))
+		print_seconds = 0
