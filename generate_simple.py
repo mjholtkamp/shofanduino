@@ -68,8 +68,8 @@ for (seconds, humidity) in generate_humidity(total_duration):
 
 	deviation = deviation * (1 - deviation_ratio) + (humidity - avg) * deviation_ratio
 	deviation = max(deviation, humidity - avg)
-	t_lo = avg + deviation / 3
-	t_hi = avg + 2 * deviation / 3
+	t_lo = avg + deviation / 4
+	t_hi = avg + deviation / 2
 	print_seconds += resolution
 	if print_seconds > print_resolution:
 		f.write('%u %g %g %g %g %g\n' % (seconds, humidity, avg + deviation, avg, t_lo, t_hi))

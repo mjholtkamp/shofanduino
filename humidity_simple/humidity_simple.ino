@@ -70,8 +70,8 @@ void loop() {
   int cur_deviation = humidity - avg;
   deviation = deviation * (1.0f - deviation_ratio) + cur_deviation * deviation_ratio;
   deviation = max(deviation, cur_deviation);
-  thresholdLow = avg + deviation / 3.0f;
-  thresholdHigh = avg + 2.0f * deviation / 3.0f;
+  thresholdLow = avg + deviation / 4.0f;
+  thresholdHigh = avg + deviation / 2.0f;
   
   action = FAN_NOCHANGE;
   if (humidity < thresholdLow) {
