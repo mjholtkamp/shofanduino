@@ -141,7 +141,24 @@ void loop() {
   Serial.print(", deviation = ");
   Serial.print((int)(avg + deviation));
   Serial.print(", on_off = ");
-  Serial.println((int)(on_off));
+  Serial.print((int)(on_off));
+  Serial.print(", datetime = ");
+  printDigits(year(), 4);
+  printDigits(month(), 2);
+  printDigits(day(), 2);
+  printDigits(hour(), 2);
+  printDigits(minute(), 2);
+  printDigits(second(), 2);
+  Serial.println();
   
   delay(milliseconds_sleep);
+}
+
+void printDigits(int value, int digits) {
+  for (int power = digits - 1; power > 0; --power) {
+    if (value < pow(10, power)) {
+       Serial.print('0');
+    }
+  }
+  Serial.print(value);
 }
