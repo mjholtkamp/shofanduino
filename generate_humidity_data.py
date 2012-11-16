@@ -29,7 +29,7 @@ def generate_humidity(period):
 		period_humidity = math.sin((float(seconds) / year) * 2 * math.pi) * 10.0
 		if (seconds - (seconds % resolution)) % day == showertime:
 			if seconds - start < showerfree_start or seconds - start > showerfree_stop:
-				shower_humidity = 50
+				shower_humidity = 150
 
 #		if seconds == start + period / 2:
 #			base_humidity += 100
@@ -46,7 +46,7 @@ f.write('# seconds humidity deviation avg low high\n')
 avg_ratio = 0.00002
 deviation_ratio = 0.000001
 avg = -1
-deviation = 20
+deviation = 100
 startup_seconds = 15 * minute
 
 total_duration = 7 * week
