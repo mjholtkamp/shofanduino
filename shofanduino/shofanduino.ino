@@ -15,7 +15,7 @@ const int MINHUMIDITY = 0;
 const int MAXHUMIDITY = 1023;
 const int milliseconds_sleep = 5000;
 const float avg_ratio = 0.00002; // ratio of new value to old value (1.0 = new value)
-const float deviation_ratio = 0.000001;
+const float deviation_ratio = 0.01;
 
 int thresholdLow = 0;
 int thresholdHigh = 0;
@@ -68,8 +68,8 @@ void loop() {
   }
   // don't use math inside max(), it causes undefined behaviour (see docs)
   int cur_deviation = humidity - avg;
+  cur_deviation = max(deviation, cur_deviation);
   deviation = deviation * (1.0f - deviation_ratio) + cur_deviation * deviation_ratio;
-  deviation = max(deviation, cur_deviation);
   thresholdLow = avg + deviation / 4.0f;
   thresholdHigh = avg + deviation / 2.0f;
   

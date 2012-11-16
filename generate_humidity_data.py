@@ -44,7 +44,7 @@ f.write('# seconds humidity deviation avg low high\n')
 
 ############################################
 avg_ratio = 0.00002
-deviation_ratio = 0.000001
+deviation_ratio = 0.01
 avg = -1
 deviation = 100
 startup_seconds = 15 * minute
@@ -66,8 +66,9 @@ for (seconds, humidity) in generate_humidity(total_duration):
 	else:
 		avg = avg * (1 - avg_ratio) + humidity * avg_ratio
 
-	deviation = deviation * (1 - deviation_ratio) + (humidity - avg) * deviation_ratio
-	deviation = max(deviation, humidity - avg)
+	cur_deviation = humidity - avg
+	cur_deviation = max(deviation, cur_deviation)
+	deviation = deviation * (1 - deviation_ratio) + (cur_deviation * deviation_ratio)
 	t_lo = avg + deviation / 4
 	t_hi = avg + deviation / 2
 	print_seconds += resolution
