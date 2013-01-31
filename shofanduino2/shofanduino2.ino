@@ -2,6 +2,16 @@
  *
  * Copyright (c) 2013, Michiel Holtkamp, see attached LICENSE file for licensing.
  *
+ * I used a library from https://github.com/ringerc/Arduino-DHT22 which is forked
+ * from the original: https://github.com/nethoncho/Arduino-DHT22 Both versions are
+ * licensed LGPL.
+ *
+ * For some reason, I have to run my Teensy2.0 (the arduino clone I used for this
+ * project) on 8 MHz instead of 16 MHz, otherwise the timing of the code screwed
+ * up the readings of the sensor. This works for me, since the code isn't very
+ * demanding (a lower frequency would be fine as well, but again doesn't work
+ * because of timing issues).
+ *
  * Shofanduino 2 measures the relative humidity in a bathroom and turns on the
  * air fan when someone takes a shower. When the humidity has dropped sufficiently,
  * the air fan is turned off automatically.
@@ -78,7 +88,7 @@
  * a PC, meaning that you can just power the arduino with USB or a different power source.
  */
 
-#include <DHT22.h>
+#include <DHT22.h> // see above for URLs
 
 #define DHT22_PIN 6
 
