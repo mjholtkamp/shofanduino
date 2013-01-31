@@ -1,4 +1,3 @@
-//#include <Time.h>
 #include <DHT22.h>
 
 #define DHT22_PIN 6
@@ -110,6 +109,10 @@ void setup() {
 
 void loop() {
   getValues();
+
+  /*
+   * Calculate limits
+   */
   
   // clamp the envelope min/max, decay otherwise
   if (env_min > humidity) {
@@ -132,6 +135,9 @@ void loop() {
   thresholdLow = env_min + (env_max - env_min) / 20.0f;
   thresholdHigh = env_min + (env_max - env_min) / 2.0f;
 
+  /*
+   * Check state
+   */
   int new_state = FAN_NOCHANGE;
   if (humidity < thresholdLow) {
     new_state = FAN_OFF;
@@ -175,6 +181,10 @@ void loop() {
       on_off = 0.5;
       break;
   }
+
+  /*
+   * Output for debugging/graphing
+   */
 
   // print out the values for debugging/plotting
   Serial.print("humidity = ");
