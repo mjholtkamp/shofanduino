@@ -106,6 +106,8 @@ DHT22 myDHT22(DHT22_PIN);
 // consts/variables for humidity sensor and averages etc.
 const int sensorPin = A0;    // select the input pin for the potentiometer
 const int milliseconds_sleep = 5000;
+const float min_humidity_diff= 10.0; // RH %
+const float max_humidity = 100.0; // needed because we add min_humidity_diff
 
 float thresholdLow = 0.0;
 float thresholdHigh = 0.0;
@@ -212,10 +214,13 @@ void loop() {
     // and env_min, so this means env_min goes up!
     env_min = humidity - (humidity - env_min) * env_min_decay;
   }
-  if (env_max < humidity) {
-    env_max = humidity;
+  float humidity_margin = humidity + min_humidity_diff;
+  humidity_margin = min(humidity_margin, max_humidity);
+
+  if (env_max < humidity_margin) {
+    env_max = humidity_margin;
   } else {
-    env_max = humidity + (env_max - humidity) * env_max_decay;
+    env_max = humidity_margin + (env_max - humidity_margin) * env_max_decay;
   }
   
   // New thresholds based on the envelope values. We
