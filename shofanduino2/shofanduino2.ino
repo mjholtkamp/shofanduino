@@ -132,32 +132,35 @@ void loop() {
   thresholdLow = env_min + (env_max - env_min) / 20.0f;
   thresholdHigh = env_min + (env_max - env_min) / 2.0f;
 
-  state = FAN_NOCHANGE;
+  int new_state = FAN_NOCHANGE;
   if (humidity < thresholdLow) {
-    state = FAN_OFF;
+    new_state = FAN_OFF;
   } else if (humidity > thresholdHigh) {
-    state = FAN_ON;
+    new_state = FAN_ON;
   }
 
-  // switch the relays!
-  switch (state) {
-    case FAN_OFF:
-      // because we don't know the status of the 3-way switch, we switch both
-      // relays at the same time and hope there is no short circuit. This should
-      // not be an issue, but anyway...
-      digitalWrite(K1, NormallyConnected);
-      digitalWrite(K2, NormallyConnected);
-      break;
-    case FAN_ON:
-      digitalWrite(K2, NormallyOpen);
-      // since we don't know how the switch is switched, we first switch K2 to
-      // non-connected, then wait a while for it to settle, before we switch
-      // K1 to connected L. This should prevent any shorts (don't know if that
-      // is actually an issue, but better safe than sorry).
-      delay(milliseconds_switch_delay);
-      digitalWrite(K1, NormallyOpen);
-      break;
+  if (new_state != state) {
+    // switch the relays!
+    switch (state) {
+      case FAN_OFF:
+        // because we don't know the status of the 3-way switch, we switch both
+        // relays at the same time and hope there is no short circuit. This should
+        // not be an issue, but anyway...
+        digitalWrite(K1, NormallyConnected);
+        digitalWrite(K2, NormallyConnected);
+        break;
+      case FAN_ON:
+        digitalWrite(K2, NormallyOpen);
+        // since we don't know how the switch is switched, we first switch K2 to
+        // non-connected, then wait a while for it to settle, before we switch
+        // K1 to connected L. This should prevent any shorts (don't know if that
+        // is actually an issue, but better safe than sorry).
+        delay(milliseconds_switch_delay);
+        digitalWrite(K1, NormallyOpen);
+        break;
+    }
   }
+  state = new_state;
 
   // display the current state in the graph
   // don't use absolute values, so the graph can zoom in and show more information
