@@ -165,7 +165,7 @@ void loop() {
 
   if (new_state != state) {
     // switch the relays!
-    switch (state) {
+    switch (new_state) {
       case FAN_OFF:
         // because we don't know the status of the 3-way switch, we switch both
         // relays at the same time and hope there is no short circuit. This should
