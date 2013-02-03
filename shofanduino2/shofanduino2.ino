@@ -13,11 +13,11 @@
 
 #include <DHT22.h> // see above for URLs
 
-#define DHT22_PIN 6
+#define DHT22_PIN 23
 
 // consts for controlling relays
-const int K1 = 11;
-const int K2 = 12;
+const int K1 = 5;
+const int K2 = 6;
 const int milliseconds_switch_delay = 100;
 const int NormallyConnected = HIGH;
 const int NormallyOpen = LOW;
