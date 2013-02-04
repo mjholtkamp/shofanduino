@@ -150,7 +150,7 @@ void loop() {
   // want the fan to turn on pretty quickly, but we don't
   // want it to turn off quickly. This explains the difference
   // in factors between low and high.
-  thresholdLow = env_min + (env_max - env_min) / 20.0f;
+  thresholdLow = env_min + (env_max - env_min) / 10.0f;
   thresholdHigh = env_min + (env_max - env_min) / 2.0f;
 
   /*
