@@ -111,7 +111,8 @@ void setup() {
   pinMode(sensorPin, INPUT);
   getValues();
   env_min = humidity;
-  env_max = humidity;
+  env_max = humidity + min_humidity_diff;
+  env_max = max(env_max, max_humidity);
   
   // calculate decay
   float t = milliseconds_sleep / 1000.0f;
@@ -137,13 +138,10 @@ void loop() {
     // and env_min, so this means env_min goes up!
     env_min = humidity - (humidity - env_min) * env_min_decay;
   }
-  float humidity_margin = humidity + min_humidity_diff;
-  humidity_margin = min(humidity_margin, max_humidity);
-
-  if (env_max < humidity_margin) {
-    env_max = humidity_margin;
+  if (env_max < humidity) {
+    env_max = humidity;
   } else {
-    env_max = humidity_margin + (env_max - humidity_margin) * env_max_decay;
+    env_max = humidity + (env_max - humidity) * env_max_decay;
   }
   
   // New thresholds based on the envelope values. We
