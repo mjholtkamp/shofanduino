@@ -112,7 +112,7 @@ void setup() {
   getValues();
   env_min = humidity;
   env_max = humidity + min_humidity_diff;
-  env_max = max(env_max, max_humidity);
+  env_max = min(env_max, max_humidity);
   
   // calculate decay
   float t = milliseconds_sleep / 1000.0f;
