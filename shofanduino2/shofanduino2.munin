@@ -1,0 +1,102 @@
+#!/bin/sh
+#  -*- sh -*-
+
+: << =cut
+
+=head1 NAME
+
+humidity - Plugin to monitor humidity
+
+=head1 CONFIGURATION
+
+You should probably run this plugin as a different user, so munin can actually
+read the USB device. On Debian, this is 'dialout'. To set the device, use the
+env.dev option, as shown below:
+
+  [shofanduino2]
+  group dialout
+  env.dev /dev/ttyACM0
+
+
+=head1 AUTHOR
+
+Michiel Holtkamp <michiel@supermind.nl>
+
+=head1 LICENSE
+
+MIT-like
+
+=head1 MAGIC MARKERS
+
+ #%# family=auto
+ #%# capabilities=autoconf
+
+=cut
+
+. $MUNIN_LIBDIR/plugins/plugin.sh
+
+
+DEFAULT_DEV=/dev/ttyACM0
+if [ ! -z "$dev" ]; then
+	DEV=$dev
+else
+	DEV=$DEFAULT_DEV
+fi
+
+if [ "$1" = "autoconf" ]; then
+	if [ -r ${DEV} ]; then
+		echo yes
+		exit 0
+	else
+		echo no
+		exit 0
+	fi
+fi
+ 
+if [ "$1" = "config" ]; then
+	echo 'graph_title Humidity'
+	echo 'graph_args --base 1000 -l 0 -u 100 -r'
+	echo 'graph_vlabel Relative Humidity (%) / Celcius (C)'
+	echo 'graph_scale yes'
+	echo 'graph_category sensors'
+	echo 'graph_info This graph shows the humidity of the sensor.'
+	echo 'humidity.label humidity'
+	echo 'humidity.info Humidity, value ranges from 0% (low) to 100% (high)'
+	echo 'envelope_min.label Envelope minimum'
+	echo 'envelope_max.label Envelope maximum'
+	echo 'threshold_low.label low threshold'
+	echo 'threshold_hi.label high threshold'
+	echo 'temperature.label temperature (Celcius)'
+	echo 'on_off.label on/off'
+	echo 'on_off.cdef on_off,10,*'
+	exit 0
+fi
+
+python << EOF
+import serial
+from time import sleep
+
+device = '$DEV'
+ser = serial.Serial(device, 9600, timeout=None)
+
+# first read two lines, it can be mangled because we connect during a print
+while True:
+	line = ser.readline()
+	if not line.startswith('humidity = '):
+		continue
+
+	line = line.strip()
+
+	items = line.split(',')
+	contents = ""
+	for item in items:
+		try:
+			label, value = item.split('=')
+		except ValueError:
+			continue
+		else:
+			contents += "%s.value %s\n" % (label.strip(), value.strip())
+
+	print contents,
+	break
+EOF
