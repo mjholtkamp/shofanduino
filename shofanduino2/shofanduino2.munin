@@ -84,6 +84,8 @@ while True:
 	line = ser.readline()
 	if not line.startswith('humidity = '):
 		continue
+	if 'E: ' in line:
+		continue
 
 	line = line.strip()
 
