@@ -43,7 +43,8 @@ float on_off = 0;
 // variables for decay
  // number of seconds after which the difference between the humidity and the max envelope should have been halved.
 const float p_halflife_max = 604800.0;
-const float p_halflife_min = 86400.0; // same for the min envelope. This is shorter because it needs to change faster.
+//const float p_halflife_min = 86400.0; // same for the min envelope. This is shorter because it needs to change faster.
+const float p_halflife_min = 7200.0; // same for the min envelope. This is shorter because it needs to change faster.
 float env_max_decay = 0.0;
 float env_min_decay = 0.0;
 
@@ -60,6 +61,10 @@ void getValues() {
   errorCode = myDHT22.readData();
   humidity = myDHT22.getHumidity();
   temperature = myDHT22.getTemperatureC();
+
+  // clamp humidity
+  humidity = max(humidity, 0);
+  humidity = min(humidity, 100);
 
   switch(errorCode) {
   case DHT_ERROR_NONE:
