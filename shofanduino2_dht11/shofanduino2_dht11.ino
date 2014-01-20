@@ -31,6 +31,8 @@ const float max_humidity = 100.0; // needed because we add min_humidity_diff
 
 RunningMedian samples = RunningMedian(3);
 
+const float thresholdHighRatio = 6.0f;
+const float thresholdLowRatio = 16.0f;
 float thresholdLow = 0.0;
 float thresholdHigh = 0.0;
 float env_min = 0.0;
@@ -156,17 +158,14 @@ void loop() {
   
   // clamp the envelope min/max, decay otherwise
   if (env_min > humidity) {
-    env_min -= (env_min - humidity) * 0.51;
+    env_min = humidity;
   } else {
     // this actually decays the difference between humidity
     // and env_min, so this means env_min goes up!
     env_min = humidity - (humidity - env_min) * env_min_decay;
   }
   if (env_max < humidity) {
-    // add little over a half of the difference
-    // to prevent very large changes because of
-    // salt and pepper noise.
-    env_max += (humidity - env_max) * 0.51;
+    env_max = humidity;
   } else {
     env_max = humidity + (env_max - humidity) * env_max_decay;
   }
@@ -175,8 +174,8 @@ void loop() {
   // want the fan to turn on pretty quickly, but we don't
   // want it to turn off quickly. This explains the difference
   // in factors between low and high.
-  thresholdLow = env_min + (env_max - env_min) / 8.0f;
-  thresholdHigh = env_min + (env_max - env_min) / 2.0f;
+  thresholdLow = env_min + (env_max - env_min) / thresholdLowRatio;
+  thresholdHigh = env_min + (env_max - env_min) / thresholdHighRatio;
 
   /*
    * Check state
