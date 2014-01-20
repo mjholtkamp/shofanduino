@@ -91,13 +91,13 @@ while True:
 
 	items = line.split(',')
 	contents = ""
-	for item in items:
-		try:
+	try:
+		for item in items:
+			# split might raise a ValueError
 			label, value = item.split('=')
-		except ValueError:
-			continue
-		else:
 			contents += "%s.value %s\n" % (label.strip(), value.strip())
+	except ValueError:
+		continue
 
 	print contents,
 	break
