@@ -29,9 +29,9 @@ const int milliseconds_sleep = 5000;
 const float min_humidity_diff= 10.0; // RH %
 const float max_humidity = 100.0; // needed because we add min_humidity_diff
 
-RunningMedian samples = RunningMedian(3);
+RunningMedian samples = RunningMedian(5);
 
-const float thresholdHighRatio = 6.0f;
+const float thresholdHighRatio = 8.0f;
 const float thresholdLowRatio = 16.0f;
 float thresholdLow = 0.0;
 float thresholdHigh = 0.0;
